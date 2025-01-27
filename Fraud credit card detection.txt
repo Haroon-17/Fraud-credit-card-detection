@@ -1,0 +1,44 @@
+# Step 1: Importing required libraries
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+
+# Step 2: Load the dataset (assuming the dataset is in CSV format)
+# Example: "credit_card_transactions.csv" should contain columns like "Time", "V1", "V2", ..., "Amount", "Class"
+df = pd.read_csv("credit_card_transactions.csv")
+
+# Step 3: Data Preprocessing
+# Check for missing values
+df.isnull().sum()
+
+# Features and target
+X = df.drop(columns=["Class"])  # Features (excluding 'Class' column)
+y = df["Class"]  # Target (fraudulent transactions, where 1 is fraud, 0 is not fraud)
+
+# Scale features (important for many models)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 4: Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Step 5: Train a RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Step 6: Predict and evaluate the model
+y_pred = model.predict(X_test)
+
+# Step 7: Evaluate the model using classification report and confusion matrix
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+# You can also check the accuracy if you like
+accuracy = np.mean(y_pred == y_test)
+print(f"Accuracy: {accuracy:.4f}")
